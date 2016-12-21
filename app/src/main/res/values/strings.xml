@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BucketList</string>
+    <string name="you_dont_have_any_task_to_do_yet">You don\'t have any task to do yet!</string>
+    <string name="add_task">Add task</string>
+    <string name="edit_task">Edit task</string>
+    <string name="save">save</string>
+</resources>
