@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_add_edit"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.bridou_n.bucketlist.features.addEdit.AddEditActivity">
@@ -10,7 +10,8 @@
     <EditText
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="textMultiLine"
+        android:background="@android:color/transparent"
         tools:text="Title"
         android:ems="10"
         android:id="@+id/titleEt"
@@ -18,34 +19,37 @@
         android:textStyle="bold"
         android:textSize="18sp"
         android:textColor="@color/primaryText"
+        android:nextFocusDown="@+id/contentEt"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/appCompatSpinner"
+        app:layout_constraintRight_toLeftOf="@+id/priority"
         android:layout_marginEnd="8dp" />
-
-    <android.support.v7.widget.AppCompatSpinner
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/appCompatSpinner" />
 
     <EditText
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="textMultiLine"
+        android:background="@android:color/transparent"
         tools:text="My super content"
         android:ems="10"
         android:id="@+id/contentEt"
         android:textColor="@color/secondaryText"
         android:textSize="16sp"
         android:layout_marginTop="16dp"
+        android:hint="@string/what_do_you_need_to_do"
         app:layout_constraintTop_toBottomOf="@+id/titleEt"
         android:layout_marginStart="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/priority" />
 </android.support.constraint.ConstraintLayout>

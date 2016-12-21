@@ -4,4 +4,13 @@
     <string name="add_task">Add task</string>
     <string name="edit_task">Edit task</string>
     <string name="save">save</string>
+    <string name="task_title">Task title</string>
+    <string name="what_do_you_need_to_do">What do you need to do ?</string>
+    <string name="the_title_cannot_be_empty">The title can\'t be empty</string>
+    <string name="x_done_x_todo" formatted="false">%d done - %d todo</string>
+    <string-array name="priorities">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
 </resources>

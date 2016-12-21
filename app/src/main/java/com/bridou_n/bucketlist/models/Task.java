@@ -12,12 +12,12 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class Task extends RealmObject {
-    @Ignore
-    public static final int PRIORITY_LOW = 0;
-    @Ignore
-    public static final int PRIORITY_MEDIUM = 1;
-    @Ignore
-    public static final int PRIORITY_HIGH = 3;
+    /**
+     * Thoses indexes should be the indexes of the "priorities" string array
+     */
+    @Ignore public static final int PRIORITY_LOW = 0;
+    @Ignore public static final int PRIORITY_MEDIUM = 1;
+    @Ignore public static final int PRIORITY_HIGH = 3;
 
     @PrimaryKey
     private String id;

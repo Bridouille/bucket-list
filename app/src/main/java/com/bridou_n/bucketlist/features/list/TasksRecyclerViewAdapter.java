@@ -7,10 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.bridou_n.bucketlist.R;
@@ -19,7 +19,6 @@ import com.bridou_n.bucketlist.models.Task;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
@@ -37,16 +36,19 @@ public class TasksRecyclerViewAdapter extends RealmRecyclerViewAdapter<Task, Tas
 
     private Context ctx;
     private Realm realm;
+    private ArrayAdapter<CharSequence> priorities;
 
     public TasksRecyclerViewAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Task> data, boolean autoUpdate, Realm realm) {
         super(context, data, autoUpdate);
         ctx = context;
         this.realm = realm;
+        priorities = ArrayAdapter.createFromResource(ctx, R.array.priorities, android.R.layout.simple_spinner_item);
     }
 
     public class TaskHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.title) TextView title;
         @BindView(R.id.content) TextView content;
+        @BindView(R.id.priority) TextView priority;
         @BindView(R.id.state) AppCompatCheckBox state;
 
         private Task task;
@@ -61,6 +63,7 @@ public class TasksRecyclerViewAdapter extends RealmRecyclerViewAdapter<Task, Tas
             title.setText(task.getTitle());
             content.setText(task.getContent());
             state.setChecked(task.isDone());
+            priority.setText(priorities.getItem(task.getPriority()));
             if (task.isDone()) {
                 title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 content.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -70,7 +73,7 @@ public class TasksRecyclerViewAdapter extends RealmRecyclerViewAdapter<Task, Tas
             }
         }
 
-        @OnClick(R.id.content)
+        @OnClick(R.id.container)
         public void onTaskclicked(View v) {
             Intent intent = new Intent(ctx, AddEditActivity.class);
 
