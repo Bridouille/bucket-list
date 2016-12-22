@@ -11,10 +11,10 @@ It is a sample todo-list app. You can add/edit/delete a task composed of:
 You can mark a task as done, undone. You can also search trough your list of task by title or content.
 
 
-<img src="screenshots/list.png" width="25%" />
-<img src="screenshots/search.png" width="25%" />
-<img src="screenshots/no_result.png" width="25%" />
-<img src="screenshots/edit.png" width="25%" />
+<img src="screenshots/list.png" width="24%" />
+<img src="screenshots/search.png" width="24%" />
+<img src="screenshots/no_result.png" width="24%" />
+<img src="screenshots/edit.png" width="24%" />
 
 ## Libraries ##
 
