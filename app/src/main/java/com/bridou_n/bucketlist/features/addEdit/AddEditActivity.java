@@ -7,7 +7,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,7 +27,8 @@ public class AddEditActivity extends AppCompatActivity {
     public static final String TASK_ID = "taskID";
 
     private Realm realm;
-    private Task task;
+    private AddEditPresenter presenter;
+    private ActionBar ab;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.container) ConstraintLayout container;
@@ -50,22 +50,34 @@ public class AddEditActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         priority.setAdapter(adapter);
 
-        // Getting the given task, if any
-        String id = getIntent().getStringExtra(TASK_ID);
-        if (id != null) {
-            task = realm.where(Task.class).equalTo("id", id).findFirst();
-            titleEt.setText(task.getTitle());
-            contentEt.setText(task.getContent());
-            priority.setSelection(task.getPriority());
-        }
-
         // Setup the toolbar
         toolbar.inflateMenu(R.menu.menu_add_edit_task);
-        ActionBar ab = getSupportActionBar();
+        ab = getSupportActionBar();
+
+        // Setup the presenter
+        presenter = new AddEditPresenter(this, realm);
+        presenter.displayTask(getIntent().getStringExtra(TASK_ID));
+    }
+
+    public void setupView(Task task) {
         if (ab != null) {
             ab.setTitle(task == null ? getString(R.string.add_task) : getString(R.string.edit_task));
             ab.setDisplayHomeAsUpEnabled(true);
         }
+
+        if (task != null) {
+            titleEt.setText(task.getTitle());
+            contentEt.setText(task.getContent());
+            priority.setSelection(task.getPriority());
+        }
+    }
+
+    public void showError(String err) {
+        Snackbar.make(container, err, Snackbar.LENGTH_LONG).show();
+    }
+
+    public void goBack() {
+        onBackPressed();
     }
 
     @Override
@@ -73,10 +85,9 @@ public class AddEditActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_add_edit_task, menu);
 
-        if (task == null) {
+        if (!presenter.hasTask()) {
             menu.removeItem(R.id.action_delete);
         }
-
         return true;
     }
 
@@ -84,38 +95,15 @@ public class AddEditActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                onBackPressed();
                 break;
             case R.id.action_save:
-                String title = titleEt.getText().toString();
-                String content = contentEt.getText().toString();
-                int prio = priority.getSelectedItemPosition();
-
-                if (title.length() == 0) {
-                    Snackbar.make(container, getString(R.string.the_title_cannot_be_empty), Snackbar.LENGTH_LONG).show();
-                    return false;
-                }
-
-                if (task != null) {
-                    realm.executeTransaction(tRealm -> {
-                        task.setTitle(title);
-                        task.setContent(content);
-                        task.setPriority(prio);
-                        task.setLastEdit(new Date().getTime());
-                    });
-                } else {
-                    task = new Task(title, content, false, prio);
-                    realm.executeTransaction(tRealm -> {
-                        tRealm.copyToRealm(task);
-                    });
-                }
+                presenter.saveTask(titleEt.getText().toString(), contentEt.getText().toString(), priority.getSelectedItemPosition());
                 break;
             case R.id.action_delete:
-                realm.executeTransaction(tRealm -> {
-                    task.deleteFromRealm();
-                });
+                presenter.deleteTask();
                 break;
         }
-        onBackPressed();
         return super.onOptionsItemSelected(item);
     }
 

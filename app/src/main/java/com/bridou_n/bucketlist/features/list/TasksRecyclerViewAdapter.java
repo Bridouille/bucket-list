@@ -88,8 +88,12 @@ public class TasksRecyclerViewAdapter extends RealmRecyclerViewAdapter<Task, Tas
 
         @OnClick(R.id.state)
         public void onCheckedChanged(View v) {
-            realm.executeTransaction(tRealm -> {
-                task.setDone(!task.isDone());
+            String id = task.getId();
+
+            realm.executeTransactionAsync(tRealm -> {
+                Task t = tRealm.where(Task.class).equalTo("id", id).findFirst();
+
+                t.setDone(!t.isDone());
             });
         }
     }

@@ -14,33 +14,36 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bridou_n.bucketlist.R;
 import com.bridou_n.bucketlist.features.addEdit.AddEditActivity;
-import com.bridou_n.bucketlist.models.Task;
+import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.Case;
 import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.Sort;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class ListActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.empty) ConstraintLayout empty;
     @BindView(R.id.empty_content) TextView emptyContent;
+    @BindView(R.id.empty_image) ImageView emptyImage;
     @BindView(R.id.rv) RecyclerView rv;
     @BindView(R.id.add_note) FloatingActionButton addNote;
 
     private ActionBar ab;
     private Realm realm;
-    private TasksRecyclerViewAdapter tasksAdapter;
+    private ListPresenter presenter;
+    private Subscription sub;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,30 +57,14 @@ public class ListActivity extends AppCompatActivity {
 
         ab = getSupportActionBar();
 
-        RealmResults<Task> tasks = realm.where(Task.class).findAllSortedAsync(
-                new String[]{"priority", "lastEdit"},
-                new Sort[]{Sort.DESCENDING, Sort.ASCENDING});
-
-        tasksAdapter = new TasksRecyclerViewAdapter(this, tasks, true, realm);
-
-        tasks.addChangeListener(newResults -> {
-            if (newResults.size() == 0) {
-                showEmptyState(getString(R.string.you_dont_have_any_task_to_do_yet));
-            } else {
-                showContent(tasksAdapter);
-            }
-
-            RealmResults<Task> done = newResults.where().equalTo("done", true).findAll();
-
-            if (ab != null) {
-                ab.setSubtitle(String.format(Locale.getDefault(), getString(R.string.x_done_x_todo), done.size(), newResults.size() - done.size()));
-            }
-        });
-
+        // Setup the list
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        rv.setAdapter(tasksAdapter);
+
+        // Setup the presenter
+        presenter = new ListPresenter(this, realm);
+        presenter.getAllTasks();
     }
 
     @OnClick(R.id.add_note)
@@ -85,16 +72,23 @@ public class ListActivity extends AppCompatActivity {
         startActivity(new Intent(this, AddEditActivity.class));
     }
 
-    public void showEmptyState(String msg) {
+    public void updateSubtitle(int done, int todo) {
+        if (ab != null) {
+            ab.setSubtitle(String.format(Locale.getDefault(), getString(R.string.x_done_x_todo), done, todo));
+        }
+    }
+
+    public void showEmptyState(String msg, int iconRes) {
         rv.setVisibility(View.GONE);
         empty.setVisibility(View.VISIBLE);
         emptyContent.setText(msg);
+        emptyImage.setImageResource(iconRes);
     }
 
-    public void showContent(TasksRecyclerViewAdapter adapter) {
+    public void showTasks(TasksRecyclerViewAdapter adapter) {
+        rv.setAdapter(adapter);
         empty.setVisibility(View.GONE);
         rv.setVisibility(View.VISIBLE);
-        rv.setAdapter(adapter);
     }
 
     @Override
@@ -105,35 +99,14 @@ public class ListActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search_task).getActionView();
         searchView.setQueryHint(getString(R.string.search_tasks));
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (newText != null && newText.length() > 1) {
-
-                    RealmResults<Task> tasks = realm.where(Task.class)
-                            .contains("title", newText, Case.INSENSITIVE)
-                            .or()
-                            .contains("content", newText, Case.INSENSITIVE)
-                            .findAllSortedAsync(new String[]{"priority", "lastEdit"}, new Sort[]{Sort.DESCENDING, Sort.ASCENDING});
-
-                    tasks.addChangeListener(newResults -> {
-                        if (newResults.size() == 0) {
-                            showEmptyState(getString(R.string.no_task_matches_your_search));
-                        } else {
-                            showContent(new TasksRecyclerViewAdapter(ListActivity.this, tasks, true, realm));
-                        }
-                    });
-                } else {
-                    showContent(tasksAdapter);
-                }
-                return true;
-            }
-        });
+        sub = RxSearchView.queryTextChanges(searchView) // Watch for the user's typing
+                .skip(1)
+                .debounce(200, TimeUnit.MILLISECONDS)
+                .map(CharSequence::toString)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    presenter.onTaskSearched(s);
+                });
 
         return true;
     }
@@ -141,6 +114,10 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (sub != null && !sub.isUnsubscribed()) {
+            sub.unsubscribe();
+        }
+        presenter.dropView();
         realm.close();
     }
 }

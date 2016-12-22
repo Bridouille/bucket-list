@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:tint="@color/secondaryText"
-            app:srcCompat="@drawable/ic_assignment_turned_in_black_48dp"
+            tools:src="@drawable/ic_assignment_turned_in_black_48dp"
             android:layout_centerHorizontal="true"
             android:id="@+id/empty_image"
             android:layout_marginEnd="16dp"
