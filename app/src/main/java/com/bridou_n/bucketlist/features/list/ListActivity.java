@@ -1,5 +1,6 @@
 package com.bridou_n.bucketlist.features.list;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -19,6 +20,9 @@ import android.widget.TextView;
 
 import com.bridou_n.bucketlist.R;
 import com.bridou_n.bucketlist.features.addEdit.AddEditActivity;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 
 import java.util.Locale;
@@ -32,6 +36,8 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 public class ListActivity extends AppCompatActivity {
+
+    private static final String PREF_TUTO_KEY = "prefTuto";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.empty) ConstraintLayout empty;
@@ -65,6 +71,26 @@ public class ListActivity extends AppCompatActivity {
         // Setup the presenter
         presenter = new ListPresenter(this, realm);
         presenter.getAllTasks();
+
+        // Show the tutorial
+        if (!getPreferences(Context.MODE_PRIVATE).getBoolean(PREF_TUTO_KEY, false)) {
+            showTutorial();
+        }
+    }
+
+    public void showTutorial() {
+        new TapTargetSequence(this)
+                .targets(TapTarget.forToolbarMenuItem(toolbar, R.id.action_search_task, getString(R.string.search_tasks), getString(R.string.click_here_to_search_your_tasks))
+                                .dimColor(R.color.primaryText)
+                                .drawShadow(true)
+                                .cancelable(false),
+                        TapTarget.forView(addNote, getString(R.string.add_task), getString(R.string.this_is_where_you_can_add_new_things_to_do))
+                            .dimColor(R.color.primaryText)
+                            .drawShadow(true)
+                            .tintTarget(false)
+
+                ).start();
+        getPreferences(Context.MODE_PRIVATE).edit().putBoolean(PREF_TUTO_KEY, true).apply();
     }
 
     @OnClick(R.id.add_note)

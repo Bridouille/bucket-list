@@ -1,5 +1,6 @@
 package com.bridou_n.bucketlist.features.addEdit;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
@@ -15,8 +16,8 @@ import android.widget.EditText;
 
 import com.bridou_n.bucketlist.R;
 import com.bridou_n.bucketlist.models.Task;
-
-import java.util.Date;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +26,7 @@ import io.realm.Realm;
 public class AddEditActivity extends AppCompatActivity {
 
     public static final String TASK_ID = "taskID";
+    private static final String PREF_TUTO_KEY = "prefTuto";
 
     private Realm realm;
     private AddEditPresenter presenter;
@@ -57,6 +59,21 @@ public class AddEditActivity extends AppCompatActivity {
         // Setup the presenter
         presenter = new AddEditPresenter(this, realm);
         presenter.displayTask(getIntent().getStringExtra(TASK_ID));
+
+        // Show the tutorial
+        if (!getPreferences(Context.MODE_PRIVATE).getBoolean(PREF_TUTO_KEY, false)) {
+            showTutorial();
+        }
+    }
+
+    public void showTutorial() {
+        TapTargetView.showFor(this,
+                TapTarget.forToolbarMenuItem(toolbar,
+                        R.id.action_save, getString(R.string.save_your_changes),
+                        getString(R.string.dont_forget_to_save_your_changes))
+                        .dimColor(R.color.primaryText)
+                        .drawShadow(true));
+        getPreferences(Context.MODE_PRIVATE).edit().putBoolean(PREF_TUTO_KEY, true).apply();
     }
 
     public void setupView(Task task) {

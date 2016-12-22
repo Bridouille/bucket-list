@@ -11,6 +11,10 @@
     <string name="delete">Delete</string>
     <string name="search_tasks">Search tasks</string>
     <string name="no_task_matches_your_search">No task matches your search</string>
+    <string name="save_your_changes">Save your changes</string>
+    <string name="dont_forget_to_save_your_changes">Don\'t forget to save your changes after editing your task!</string>
+    <string name="click_here_to_search_your_tasks">Click here to search your tasks</string>
+    <string name="this_is_where_you_can_add_new_things_to_do">This is where you can add new things to do!</string>
     <string-array name="priorities">
         <item>Low</item>
         <item>Medium</item>

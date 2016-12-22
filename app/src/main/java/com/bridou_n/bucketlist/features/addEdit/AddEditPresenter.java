@@ -28,8 +28,8 @@ public class AddEditPresenter {
     public void displayTask(String taskId) {
         if (taskId != null) {
             task = realm.where(Task.class).equalTo("id", taskId).findFirst();
-            view.setupView(task);
         }
+        view.setupView(task);
     }
 
     public boolean hasTask() {
