@@ -27,3 +27,8 @@ You can mark a task as done, undone. You can also search trough your list of tas
 ## Architecture ##
 
 The app is using the MVP architecture.
+
+
+## Icon ##
+
+The icon of the app is taken from [Logdust](http://logodust.com/?giveaway) and resized with [Android Asset Studio](https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html).
