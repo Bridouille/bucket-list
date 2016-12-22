@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -37,6 +38,7 @@ public class TasksRecyclerViewAdapter extends RealmRecyclerViewAdapter<Task, Tas
     private Context ctx;
     private Realm realm;
     private ArrayAdapter<CharSequence> priorities;
+    private int[] prioritiesColors = new int[]{R.color.lowPriority, R.color.mediumPriority, R.color.highPriority};
 
     public TasksRecyclerViewAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Task> data, boolean autoUpdate, Realm realm) {
         super(context, data, autoUpdate);
@@ -63,7 +65,10 @@ public class TasksRecyclerViewAdapter extends RealmRecyclerViewAdapter<Task, Tas
             title.setText(task.getTitle());
             content.setText(task.getContent());
             state.setChecked(task.isDone());
-            priority.setText(priorities.getItem(task.getPriority()));
+            if (task.getPriority() < prioritiesColors.length) {
+                priority.setText(priorities.getItem(task.getPriority()));
+                priority.setTextColor(ContextCompat.getColor(ctx, prioritiesColors[task.getPriority()]));
+            }
             if (task.isDone()) {
                 title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 content.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);

@@ -6,6 +6,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +30,7 @@ public class AddEditActivity extends AppCompatActivity {
     private Realm realm;
     private Task task;
 
+    @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.container) ConstraintLayout container;
     @BindView(R.id.titleEt) EditText titleEt;
     @BindView(R.id.contentEt) EditText contentEt;
@@ -38,6 +41,8 @@ public class AddEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+
         realm = Realm.getDefaultInstance();
 
         // Setup the priorities spinner
@@ -54,7 +59,8 @@ public class AddEditActivity extends AppCompatActivity {
             priority.setSelection(task.getPriority());
         }
 
-        // Set the actionbar title
+        // Setup the toolbar
+        toolbar.inflateMenu(R.menu.menu_add_edit_task);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setTitle(task == null ? getString(R.string.add_task) : getString(R.string.edit_task));
@@ -66,6 +72,11 @@ public class AddEditActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_add_edit_task, menu);
+
+        if (task == null) {
+            menu.removeItem(R.id.action_delete);
+        }
+
         return true;
     }
 
@@ -73,7 +84,6 @@ public class AddEditActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
                 break;
             case R.id.action_save:
                 String title = titleEt.getText().toString();
@@ -98,9 +108,14 @@ public class AddEditActivity extends AppCompatActivity {
                         tRealm.copyToRealm(task);
                     });
                 }
-                onBackPressed();
+                break;
+            case R.id.action_delete:
+                realm.executeTransaction(tRealm -> {
+                    task.deleteFromRealm();
+                });
                 break;
         }
+        onBackPressed();
         return super.onOptionsItemSelected(item);
     }
 

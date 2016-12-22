@@ -7,9 +7,19 @@
     android:layout_height="match_parent"
     tools:context="com.bridou_n.bucketlist.features.list.ListActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
     <!-- List of tasks -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv"
+        android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical" />
@@ -17,6 +27,7 @@
     <!-- Empty view -->
     <android.support.constraint.ConstraintLayout
         android:id="@+id/empty"
+        android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
@@ -40,7 +51,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/you_dont_have_any_task_to_do_yet"
+            tools:text="@string/you_dont_have_any_task_to_do_yet"
             android:id="@+id/empty_content"
             android:layout_below="@+id/empty_image"
             android:layout_centerHorizontal="true"

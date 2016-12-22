@@ -7,6 +7,18 @@
     android:layout_height="match_parent"
     tools:context="com.bridou_n.bucketlist.features.addEdit.AddEditActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
     <EditText
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -19,8 +31,9 @@
         android:textStyle="bold"
         android:textSize="18sp"
         android:textColor="@color/primaryText"
+        android:hint="@string/task_title"
         android:nextFocusDown="@+id/contentEt"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:layout_marginStart="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/priority"
@@ -36,7 +49,7 @@
         android:id="@+id/contentEt"
         android:textColor="@color/secondaryText"
         android:textSize="16sp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:hint="@string/what_do_you_need_to_do"
         app:layout_constraintTop_toBottomOf="@+id/titleEt"
         android:layout_marginStart="16dp"
@@ -49,7 +62,6 @@
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titleEt"
         android:id="@+id/priority" />
 </android.support.constraint.ConstraintLayout>

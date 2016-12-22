@@ -8,4 +8,8 @@
     <color name="secondaryText">#757575</color>
     <color name="primaryText">#212121</color>
     <color name="divider">#BDBDBD</color>
+
+    <color name="lowPriority">#8BC34A</color>
+    <color name="mediumPriority">#FF9800</color>
+    <color name="highPriority">#F44336</color>
 </resources>
